@@ -777,19 +777,19 @@ button_tests_add = ctk.CTkButton(master=page1, height=40, fg_color="#D9D9D9", te
 button_tests_add.place_forget()
 
 # Przyciski
-button_options = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Opcje", font=font, corner_radius=0, hover_color="gray", command=toggle_options_menu)
+button_options = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Opcje", font=font, corner_radius=0, hover_color="gray", command=toggle_options_menu)
 button_options.pack(side="left")
 
 button_create_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Ustawienia testu", font=font, corner_radius=1, hover_color="gray",command=toggle_test_settings)
 button_create_template.pack(side="left")
 
-button_load_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Wczytaj szablon", font=font, corner_radius=1, hover_color="gray", command=load_template)
+button_load_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Wczytaj szablon", font=font, corner_radius=1, hover_color="gray", command=load_template)
 button_load_template.pack(side="left")
 
 button_load_tests = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Wczytaj testy", font=font, corner_radius=1, hover_color="gray", command=load_tests)
 button_load_tests.pack(side="left")
 
-button_evaluate = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Oceń", font=font, corner_radius=1, hover_color="gray",command=evaluate)
+button_evaluate = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Oceń", font=font, corner_radius=1, hover_color="gray",command=evaluate)
 button_evaluate.pack(side="left")
 
 button_create_report = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Stwórz raport", font=font, corner_radius=1, hover_color="gray",command=raport_button_clicked)
@@ -807,7 +807,7 @@ button_left = ctk.CTkButton(master=toolbar_frame, height=40, width=100, image=ar
 button_left.pack(side="right", padx=5)
 
 # opcje menu
-options_frame = ctk.CTkFrame(master=root, width=button_options.winfo_width(), fg_color=FG_COLOR)
+options_frame = ctk.CTkFrame(master=root, width=button_options.winfo_width(), fg_color="#484545")
 x = button_options.winfo_rootx()
 y = button_options.winfo_rooty() + button_options.winfo_height()
 
@@ -822,7 +822,7 @@ button_exit = ctk.CTkButton(master=options_frame, height=40, text="Wyjdź", comm
 button_exit.pack(fill="x")
 
 # ustawienia testu
-test_settings_frame = ctk.CTkFrame(master= root, width=400,height=400,fg_color=FG_COLOR,corner_radius=4,border_color="gray",border_width=1)
+test_settings_frame = ctk.CTkFrame(master= root, width=400,height=400,fg_color="#484545",corner_radius=4,border_color="gray",border_width=1)
 test_settings_frame.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
 test_settings_frame.place_forget()
 
@@ -876,7 +876,7 @@ button_test_settings_cancel.grid(row=5, column=0,columnspan=2, padx=10,pady=(20,
 
 
 # pomoc menu
-help_frame = ctk.CTkFrame(master=root, width=400, fg_color=FG_COLOR, corner_radius=3,border_color="gray",border_width=1)
+help_frame = ctk.CTkFrame(master=root, width=400, fg_color="#484545", corner_radius=3,border_color="gray",border_width=1)
 help_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
 help_frame.place_forget()
 
