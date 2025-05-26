@@ -474,7 +474,7 @@ def evaluate():
         else:
             CTkMessagebox(title="Sukces", message="Ocenianie testów zakończone pomyślnie!", icon="check",
                           text_color="white", button_hover_color="grey")
-        button_create_report.pack(side="left")
+            button_create_report.pack(side="left")
 
     else:
         CTkMessagebox(title="Błąd", message = "Potwierdź swój wybór", icon= "warning",
@@ -545,42 +545,53 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
 
 list_frame_page_2 = ctk.CTkFrame(master=root)
 graded_tests,passed_test,failed_tests,summary_score,summary_points=0,0,0,0,0
+
 def test_results():
+    screen_width = root.winfo_screenwidth()
+    scaling_factor = 1.0
+    if screen_width < 1400:
+        scaling_factor = 0.8
+    elif screen_width > 2500:
+        scaling_factor = 1.25
+
+    font_size = int(12 * scaling_factor)
+    tile_height = int(36 * scaling_factor)
+    button_height = int(28 * scaling_factor)
     global graded_tests, passed_test, failed_tests, summary_score, summary_points
     global list_frame_page_2
+
     for widget in left_frame_page2.winfo_children():
         widget.destroy()
-
     for widget in right_frame_page2.winfo_children():
         widget.destroy()
 
-
-    canvas_2 = tk.Canvas(left_frame_page2)
+    canvas_2 = tk.Canvas(left_frame_page2, bg="#484545", highlightthickness=0, bd=0)
     canvas_2.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
+    scrollbar_2 = ctk.CTkScrollbar(master=left_frame_page2, orientation="vertical", command=canvas_2.yview,
+                                   fg_color="#484545", button_color="#b0b0b0", button_hover_color="#909090")
+    scrollbar_2.pack(side=tk.RIGHT, fill=tk.Y)
 
-    scrollbar = tk.Scrollbar(left_frame_page2, orient=tk.VERTICAL, command=canvas_2.yview)
-    scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-
-
-    canvas_2.configure(yscrollcommand=scrollbar.set)
+    canvas_2.configure(yscrollcommand=scrollbar_2.set)
     canvas_2.bind('<Configure>', lambda e: canvas_2.configure(scrollregion=canvas_2.bbox("all")))
-    list_frame_page_2 = ctk.CTkFrame(master=canvas_2, fg_color="transparent")
+
+    list_frame_page_2 = ctk.CTkFrame(master=canvas_2, fg_color="#484545")
     canvas_2.create_window((0, 0), window=list_frame_page_2, anchor="nw")
 
-    graded_tests, passed_test, failed_tests, summary_score, summary_points=0,0,0,0,0
+    graded_tests, passed_test, failed_tests, summary_score, summary_points = 0, 0, 0, 0, 0
+
     for i, test in enumerate(loaded_tests):
         acquired_points = test_scores[i]
-        summary_points+=acquired_points
+        summary_points += acquired_points
 
         if acquired_points / score_points >= pass_threshold:
             status = "Zaliczony"
             color_status = "green"
-            passed_test+=1
+            passed_test += 1
         else:
             status = "Niezaliczony"
-            color_status= "red"
-            failed_tests+=1
+            color_status = "red"
+            failed_tests += 1
         graded_tests += 1
 
         percentage_points = (acquired_points / score_points)
@@ -594,86 +605,56 @@ def test_results():
             degree = 2
         else:
             degree = 1
-        summary_score+=degree
+        summary_score += degree
 
+        bg_color = "#e0e0e0" if i % 2 == 0 else "#b3b3b3"
 
-        item_frame_2 = ctk.CTkFrame(master=list_frame_page_2, border_width=1, border_color="gray", fg_color="transparent")
-        item_frame_2.pack(fill=tk.X, expand=True, padx=10, pady=5)
-
-        if i % 2 == 0:
-            bg_color_frame = FG_COLOR
-        else:
-            bg_color_frame = "white"
-
-        item_frame_2.configure(fg_color=bg_color_frame)
+        item_frame_2 = ctk.CTkFrame(master=list_frame_page_2, border_width=1, border_color="gray",
+                                    fg_color=bg_color, height=tile_height)
+        item_frame_2.pack(fill=tk.X, expand=True, padx=15, pady=6)
 
         def show_differences(test):
             template_loaded_image_processed = process_image(template_loaded_image)
             test_image_processed = process_image(test['image'])
-
             template_loaded_image_np = np.array(template_loaded_image_processed)
             test_image_np = np.array(test_image_processed)
             test_name = test["file_name"]
 
-
             template_gray = cv2.cvtColor(template_loaded_image_np, cv2.COLOR_BGR2GRAY)
             test_gray = cv2.cvtColor(test_image_np, cv2.COLOR_BGR2GRAY)
-
-
             _, thresh1 = cv2.threshold(test_gray, 128, 255, cv2.THRESH_BINARY)
             _, thresh2 = cv2.threshold(template_gray, 128, 255, cv2.THRESH_BINARY)
-
             combined_result = cv2.bitwise_and(thresh2, thresh1)
-
             _, test_gray_binary = cv2.threshold(test_gray, 128, 255, cv2.THRESH_BINARY)
-
             (score, diff) = structural_similarity(combined_result, test_gray_binary, full=True)
-
             diff = (diff * 255).astype("uint8")
             diff = cv2.convertScaleAbs(diff)
-
-
-
-
             thresh = cv2.threshold(diff, 0, 255, cv2.THRESH_BINARY_INV | cv2.THRESH_OTSU)[1]
             contours = cv2.findContours(thresh, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             contours = contours[0] if len(contours) == 2 else contours[1]
-
-
             for c in contours:
-                area = cv2.contourArea(c)
-                if area > 40:
+                if cv2.contourArea(c) > 40:
                     cv2.drawContours(test_image_np, [c], 0, (0, 255, 0), -1)
-
             cv2.namedWindow(test_name, cv2.WINDOW_NORMAL)
             cv2.resizeWindow(test_name, 1024, 1024)
             cv2.imshow(test_name, test_image_np)
 
-
-        label_2_start = tk.Label(master=item_frame_2,bg=bg_color_frame,
-                                 text=f"Nazwa:  {test['file_name']}      Liczba punktów:  {acquired_points}      ocena:  {degree}      Status: ", font=FONT_SMALL)
+        label_2_start = tk.Label(master=item_frame_2, bg=bg_color,
+                                 text=f"Nazwa:  {test['file_name']}      Liczba punktów:  {acquired_points}      ocena:  {degree}      Status: ",
+                                 font=("Arial", font_size, "bold"))
         label_2_start.pack(side=tk.LEFT, fill=tk.X, padx=(10, 0), pady=5)
 
-
-        label_2_status = tk.Label(master=item_frame_2, text=status, fg=color_status,bg=bg_color_frame,font=FONT_SMALL)
+        label_2_status = tk.Label(master=item_frame_2, text=status, fg=color_status,
+                                  bg=bg_color, font=("Arial", 12, "bold"))
         label_2_status.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 0), pady=5)
 
-        diff_button = ctk.CTkButton(master=item_frame_2,width=100, fg_color="#9A9A9A",text="Włącz podgląd",font=FONT_MEDIUM,corner_radius=2,text_color="black",
-                                command=lambda t=test: show_differences(t))
-        diff_button.pack(side=tk.LEFT, fill=tk.X)
+        diff_button = ctk.CTkButton(master=item_frame_2, width=120, height=button_height, fg_color="#4FC3F7",
+                                    text="Włącz podgląd", font=("Arial", 12, "bold"), corner_radius=4,
+                                    text_color="black", command=lambda t=test: show_differences(t))
+        diff_button.pack(side=tk.LEFT, fill=tk.X, padx=(35 if status == "Zaliczony" else 20, 0))
+        diff_button.configure(hover_color="#35B1E0")
 
-        if i % 2 == 0:
-            diff_button.configure(hover_color="gray")
-        else:
-            diff_button.configure(hover_color="#D9D9D9")
-
-        if status == "Zaliczony":
-            diff_button.pack(padx=(35,0))
-        else:
-            diff_button.pack(padx=(20, 0))
-
-
-        label_2_end = tk.Label(master=item_frame_2, text="",bg=bg_color_frame)
+        label_2_end = tk.Label(master=item_frame_2, text="", bg=bg_color)
         label_2_end.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 130), pady=5)
 
     canvas_2.update_idletasks()
@@ -682,20 +663,21 @@ def test_results():
     label_summary = ctk.CTkLabel(master=right_frame_page2, text="PODSUMOWANIE", font=FONT)
     label_summary.pack(pady=10)
 
-    label_rated = ctk.CTkLabel(master=right_frame_page2, text=f"Ocenione testy:  {graded_tests}",font=FONT, text_color="#42A5F5")
+    label_rated = ctk.CTkLabel(master=right_frame_page2, text=f"Ocenione testy:  {graded_tests}", font=FONT, text_color="#FEF28A")
     label_rated.pack(anchor='w', padx=10, pady=5)
 
-    label_passed = ctk.CTkLabel(master=right_frame_page2, text=f"Zaliczone:  {passed_test}",font=FONT, text_color="green")
-    label_passed.pack(anchor='w',padx=10, pady=5)
+    label_passed = ctk.CTkLabel(master=right_frame_page2, text=f"Zaliczone:  {passed_test}", font=FONT, text_color="green")
+    label_passed.pack(anchor='w', padx=10, pady=5)
 
-    label_failed = ctk.CTkLabel(master=right_frame_page2, text=f"Niezaliczone:  {failed_tests}",font=FONT, text_color="red")
-    label_failed.pack(anchor='w', padx=10,pady=5)
+    label_failed = ctk.CTkLabel(master=right_frame_page2, text=f"Niezaliczone:  {failed_tests}", font=FONT, text_color="red")
+    label_failed.pack(anchor='w', padx=10, pady=5)
 
-    label_avg_score = ctk.CTkLabel(master=right_frame_page2, text=f"Średnia ocena:  {round(summary_score / graded_tests, 2)}",font=FONT)
-    label_avg_score.pack(anchor='w', padx=10,pady=5)
+    label_avg_score = ctk.CTkLabel(master=right_frame_page2, text=f"Średnia ocena:  {round(summary_score / graded_tests, 2)}", font=FONT)
+    label_avg_score.pack(anchor='w', padx=10, pady=5)
 
-    label_avg_num_pt = ctk.CTkLabel(master=right_frame_page2, text=f"Średnia ilość punktów:  {round(summary_points/graded_tests,2)}",font=FONT)
-    label_avg_num_pt.pack(anchor='w',padx=10, pady=5)
+    label_avg_num_pt = ctk.CTkLabel(master=right_frame_page2, text=f"Średnia ilość punktów:  {round(summary_points / graded_tests, 2)}", font=FONT)
+    label_avg_num_pt.pack(anchor='w', padx=10, pady=5)
+
 
 def raport_button_clicked():
     generate_report(graded_tests, passed_test, failed_tests,round(summary_score / graded_tests, 2),round(summary_points / graded_tests, 2))
