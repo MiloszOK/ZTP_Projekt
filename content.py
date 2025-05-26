@@ -9,6 +9,7 @@ from constants import *
 from fpdf import FPDF
 import cv2
 import numpy as np
+from datetime import datetime
 
 root = ctk.CTk()
 
@@ -90,7 +91,7 @@ def change_template():
         print(f"{type(template_loaded_image.mode)}")
         left_frame.configure(border_color="lightblue", border_width=2)
     except Exception as e:
-        CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}")
+        CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}", text_color="white")
 
 
 root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
@@ -123,7 +124,7 @@ right_frame.place(x=705, y=100, relwidth=0.4, relheight=0.60, anchor=tk.NW)
 left_frame_page2 = ctk.CTkFrame(master=page2, height=LEFT_FRAME_HEIGHT, fg_color="transparent")
 left_frame_page2.place(x=110, y=60, relwidth=0.6, relheight=0.75, anchor=tk.NW)
 
-right_frame_page2 = ctk.CTkFrame(master=page2, height=LEFT_FRAME_HEIGHT, fg_color=FG_COLOR,border_width=1,border_color="black")
+right_frame_page2 = ctk.CTkFrame(master=page2, height=LEFT_FRAME_HEIGHT, fg_color="#484545",border_width=1,border_color="black")
 right_frame_page2.place(x=950, y=60, relwidth=0.20, relheight=0.35, anchor=tk.NW)
 
 button_template_approve = ctk.CTkButton(master=page1, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Zatwierdź", font=font, corner_radius=2, hover_color="gray", command=approve_color_template)
@@ -151,8 +152,7 @@ def save_value():
         grade_table[2]=float(grade_three_entry.get())
         if score_points < question_number:
             messagebox = CTkMessagebox(title="Uwaga", message="Liczba punktów nie może być mniejsza niż liczba pytań",
-                                       icon="warning", text_color="black", fg_color="#D9D9D9", button_color="grey",
-                                       button_hover_color="grey")
+                                       icon="warning", text_color="white",button_hover_color="grey")
             return
         elif score_points> question_number:
             set_question_points(question_number,score_points)
@@ -160,27 +160,25 @@ def save_value():
             print(f"Zapisano wartości: liczba punktów = {score_points}, liczba pytań = {question_number}, próg zaliczeniowy: {pass_threshold},{grade_table[0]}, {grade_table[1]}, {grade_table[2]}")
             toggle_test_settings()
     except ValueError:
-        CTkMessagebox(title="Uwaga",message = "Podaj poprawne wartości",icon="warning", text_color="black", fg_color="#D9D9D9", button_color="grey",
-                                       button_hover_color="grey")
+        CTkMessagebox(title="Błąd",message = "Podaj poprawne wartości",icon="cancel", text_color="white", button_hover_color="grey")
 
 points_table = []
 def set_question_points(question_numbers,score_points):
     global points_table
     toggle_test_settings()
-    set_question_points_frame = ctk.CTkFrame(master=root,width=400,fg_color=FG_COLOR,corner_radius=4, border_color="gray",border_width=1)
+    set_question_points_frame = ctk.CTkFrame(master=root,width=400,fg_color="#484545",corner_radius=4,
+                                             border_color="#D9D9D9",border_width=1)
     set_question_points_frame.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
 
     def update_remaining_points(event=None):
         remaining_points = score_points
-        remaining_points_label.configure(text_color="black")
+        remaining_points_label.configure(text_color="white")
         for entry in point_entry_table:
             try:
                 value = int(entry.get())
                 if value < 0:
                     CTkMessagebox(title="Uwaga",message = "Podaj wartość dodatnią",
-                                  icon="warning", text_color="black",
-                                  fg_color="#D9D9D9", button_color="grey",
-                                       button_hover_color="grey")
+                                  icon="warning", text_color="white", button_hover_color="grey")
                     entry.delete(0, tk.END)
                     entry.focus_set()
                     return
@@ -191,7 +189,7 @@ def set_question_points(question_numbers,score_points):
                     remaining_points_label.configure(text_color="green")
             except ValueError:
                 pass
-        remaining_points_label.configure(text=f"Pozostałe punkty: {remaining_points}")
+        remaining_points_label.configure(text=f"Pozostałe punkty: {remaining_points}", text_color="white")
     def toggle_set_question_points_frame():
         set_question_points_frame.place_forget()
 
@@ -202,10 +200,10 @@ def set_question_points(question_numbers,score_points):
         column = (i // 10) * 2
         row = i % 10
         text_label= ctk.CTkLabel(master=set_question_points_frame,text=f"Pytanie {i+1} punkty:")
-        text_label.grid(row=row,column=column,pady=5, padx=10)
+        text_label.grid(row=row, column=column, pady=5, padx=10)
         text_labels.append(text_label)
 
-        point_entry= ctk.CTkEntry(master=set_question_points_frame,width=50)
+        point_entry= ctk.CTkEntry(master=set_question_points_frame,width=80)
         point_entry.grid(row=row,column=column+1,pady=5, padx=10)
         point_entry_table.append(point_entry)
         point_entry.bind("<KeyRelease>", update_remaining_points)
@@ -231,23 +229,23 @@ def set_question_points(question_numbers,score_points):
         columnspan = 1
     elif question_numbers % 10 == 0:
         columnspan = num_columns // 2 - 1
-    else:  # Dla pozostałych przypadków
+    else:
         columnspan = num_columns // 2
 
     if question_numbers <= 10:
-        cancel_column = 0  # "Anuluj" w pierwszej kolumnie
-        save_column = 1  # "Zapisz punkty" w drugiej kolumnie
+        cancel_column = 0
+        save_column = 1
     else:
-        cancel_column = 0  # Kolumna dla przycisku "Anuluj"
+        cancel_column = 0
         save_column = num_columns - columnspan  #
 
     remaining_points_label = ctk.CTkLabel(master=set_question_points_frame,
-                                          text=f"Punkty do wydania: {score_points}",font=font)
+                                          text=f"Punkty do wydania: {score_points}",font=font, text_color="white")
     remaining_points_label.grid(row=question_numbers, column=save_column,columnspan=columnspan, pady=(10,0))
-    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(),toggle_set_question_points_frame()],fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_cancel.grid(row=question_numbers+1,column=cancel_column,columnspan=columnspan,pady=20,padx=10)
 
-    button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda:[save_points(),toggle_set_question_points_frame()],fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+    button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda:[save_points(),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_save.grid(row=question_numbers+1, column=save_column,columnspan=columnspan, pady=20,padx=10)
 
 def define_roi(image):
@@ -273,8 +271,7 @@ def load_template():
     if template_loaded_image is not None:
         messagebox = CTkMessagebox(title="Uwaga", message="Już wczytano szablon. "
                                                           "Zmień aktualny, aby wczytać nowy.",
-                                   icon="warning", text_color="black", fg_color="#D9D9D9",
-                                   button_color="grey", button_hover_color="grey")
+                                   icon="warning", text_color="white", button_hover_color="grey")
         return
     file_path = filedialog.askopenfilename(
         defaultextension=".png",
@@ -293,7 +290,7 @@ def load_template():
         button_template_approve.place(x=170, y=590, anchor=tk.NW)
         button_template_change.place(x=320, y=590, anchor=tk.NW)
     except Exception as e:
-        CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}")
+        CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}", text_color="white")
 
 
 
@@ -355,7 +352,7 @@ def load_tests():
             })
 
         except Exception as e:
-            CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}")
+            CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}", text_color="white")
 
     button_tests_approve.place(x=810, y=540, anchor=tk.NW)
     button_tests_add.place(x=970, y=540, anchor=tk.NW)
@@ -369,26 +366,27 @@ def update_test_list():
         widget.destroy()
 
     # Canvas do przewijania
-    canvas = tk.Canvas(right_frame)
+    canvas = tk.Canvas(right_frame, bg="#f0f0f0", highlightthickness=0, bd=0)
     canvas.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 
-    # Scrollbar
-    scrollbar = tk.Scrollbar(right_frame, orient=tk.VERTICAL, command=canvas.yview)
+    scrollbar = ctk.CTkScrollbar(master=right_frame, orientation="vertical", command=canvas.yview,
+                                 fg_color="#3C3C3C", button_color="#b0b0b0", button_hover_color="#909090")
+
     scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
 
     # Konfiguracja canvas
-    canvas.configure(yscrollcommand=scrollbar.set)
+    canvas.configure(yscrollcommand=scrollbar.set, background="#3C3C3C")
     canvas.bind('<Configure>', lambda e: canvas.configure(scrollregion=canvas.bbox("all")))
 
     # Ramka wewnętrzna dla elementów listy
-    list_frame = ctk.CTkFrame(master=canvas, fg_color="transparent", border_color="lightblue", border_width=2)
+    list_frame = ctk.CTkFrame(master=canvas, fg_color="#333333", border_width=2)
     canvas.create_window((0, 0), window=list_frame, anchor="nw")
 
     # Dodaj nowe widgety dla każdego wczytanego testu
     for i, test in enumerate(loaded_tests):
 
         item_frame = ctk.CTkFrame(master=list_frame, border_width=1, border_color="gray", fg_color="transparent")
-        item_frame.pack(fill=tk.X, expand=True, padx=10, pady=5)  # Użyj pack dla item_frame, dodaj expand=True
+        item_frame.pack(fill=tk.X, expand=True, padx=10, pady=5)
 
         label = ctk.CTkLabel(master=item_frame, text=test["file_name"])
         label.pack(side=tk.LEFT, fill=tk.X,padx=(10, 310), pady=5)
@@ -468,36 +466,52 @@ def evaluate():
 
             test_scores.append(total_points)
 
-        test_results()
-        CTkMessagebox(title="Sukces", message="Ocenianie testów zakończone pomyślnie!", icon="check",
-                      button_color="grey", button_hover_color="grey")
+        try:
+            test_results()
+        except:
+            CTkMessagebox(title="Błąd", message="Nie wpisałeś/aś kryteriów oceniania!", icon="warning",
+                      text_color="white", button_hover_color="grey")
+        else:
+            CTkMessagebox(title="Sukces", message="Ocenianie testów zakończone pomyślnie!", icon="check",
+                          text_color="white", button_hover_color="grey")
+        button_create_report.pack(side="left")
+
     else:
-        CTkMessagebox(title="Błąd", message = "Potwierdź swój wybór", icon= "warning", button_color="grey",button_hover_color="grey")
+        CTkMessagebox(title="Błąd", message = "Potwierdź swój wybór", icon= "warning",
+                      button_hover_color="grey", text_color="white")
 
 
 def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_points):
     pdf = FPDF()
     pdf.add_page()
-    pdf.add_font('DejaVu', '', "C:/Windows/Fonts/DejaVuSans.ttf", uni=True)
+    pdf.set_fill_color(60,60,60)
+    pdf.add_font('DejaVu', '', "DejaVuSans.ttf")
 
     pdf.set_font('DejaVu', '', 16)
-    pdf.cell(200, 10, txt="RAPORT", ln=1, align="C")
+    pdf.cell(200, 10, text="RAPORT", ln=1, align="C")
     pdf.ln(20)
+
+    now = datetime.now()
+    timestamp = now.strftime("Data: %Y-%m-%d   Godzina: %H:%M:%S")
+    pdf.set_font('DejaVu', '', 12)
+    pdf.cell(200, 10, text=timestamp, ln=1, align="R")
+
     pdf.set_font('DejaVu', '', 14)
-    pdf.cell(200, 10, txt="Podsumowanie:", ln=1, align="L")
+    pdf.cell(200, 10, text="Podsumowanie:", ln=1, align="L")
     pdf.ln(10)
     pdf.set_font('DejaVu', '', 12)
-    pdf.cell(200, 10, txt=f"Ocenione testy: {graded_tests}", ln=1, align="L")
-    pdf.cell(200, 10, txt=f"Zaliczone: {passed_tests}", ln=1, align="L")
-    pdf.cell(200, 10, txt=f"Niezaliczone: {failed_tests}", ln=1, align="L")
-    pdf.cell(200, 10, txt=f"Średnia ocena: {avg_score}", ln=1, align="L")
-    pdf.cell(200, 10, txt=f"Średnia ilość punktów: {avg_points}", ln=1, align="L")
+    pdf.cell(200, 10, text=f"Ocenione testy: {graded_tests}", ln=1, align="L")
+    pdf.cell(200, 10, text=f"Zaliczone: {passed_tests}", ln=1, align="L")
+    pdf.cell(200, 10, text=f"Niezaliczone: {failed_tests}", ln=1, align="L")
+    pdf.cell(200, 10, text=f"Średnia ocena: {avg_score}", ln=1, align="L")
+    pdf.cell(200, 10, text=f"Średnia ilość punktów: {avg_points}", ln=1, align="L")
 
     pdf.ln(20)
     pdf.set_font('DejaVu', '', 14)
-    pdf.cell(200, 10, txt="Wyniki:", ln=1, align="L")
+    pdf.cell(200, 10, text="Wyniki:", ln=1, align="L")
     pdf.ln(10)
     pdf.set_font('DejaVu', '', 12)
+
 
     for i, test in enumerate(loaded_tests):
         acquired_points = test_scores[i]
@@ -525,8 +539,8 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
                  ln=1, align="L")
 
     pdf.output("raport.pdf")
-    CTkMessagebox(title="Sukces", message="Raport wygenerowany pomyślnie!", icon="check",
-                  button_color="grey", button_hover_color="grey")
+    CTkMessagebox(title="Sukces", message="Raport wygenerowany pomyślnie!", icon="check", text_color="white",
+                button_hover_color="grey")
 
 
 list_frame_page_2 = ctk.CTkFrame(master=root)
@@ -584,7 +598,7 @@ def test_results():
 
 
         item_frame_2 = ctk.CTkFrame(master=list_frame_page_2, border_width=1, border_color="gray", fg_color="transparent")
-        item_frame_2.pack(fill=tk.X, expand=True, padx=10, pady=5)  # Użyj pack dla item_frame, dodaj expand=True
+        item_frame_2.pack(fill=tk.X, expand=True, padx=10, pady=5)
 
         if i % 2 == 0:
             bg_color_frame = FG_COLOR
@@ -644,7 +658,7 @@ def test_results():
         label_2_status = tk.Label(master=item_frame_2, text=status, fg=color_status,bg=bg_color_frame,font=FONT_SMALL)
         label_2_status.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 0), pady=5)
 
-        diff_button = ctk.CTkButton(master=item_frame_2,width=100, fg_color="transparent",text="Włącz podgląd",font=FONT_MEDIUM,corner_radius=2,text_color="black",
+        diff_button = ctk.CTkButton(master=item_frame_2,width=100, fg_color="#9A9A9A",text="Włącz podgląd",font=FONT_MEDIUM,corner_radius=2,text_color="black",
                                 command=lambda t=test: show_differences(t))
         diff_button.pack(side=tk.LEFT, fill=tk.X)
 
@@ -662,13 +676,13 @@ def test_results():
         label_2_end = tk.Label(master=item_frame_2, text="",bg=bg_color_frame)
         label_2_end.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 130), pady=5)
 
-    canvas_2.update_idletasks()  # Upewnij się, że wszystkie widgety są ułożone
+    canvas_2.update_idletasks()
     canvas_2.config(scrollregion=canvas_2.bbox("all"))
 
     label_summary = ctk.CTkLabel(master=right_frame_page2, text="PODSUMOWANIE", font=FONT)
-    label_summary.pack(pady=10)  # Dodanie marginesu od góry
+    label_summary.pack(pady=10)
 
-    label_rated = ctk.CTkLabel(master=right_frame_page2, text=f"Ocenione testy:  {graded_tests}",font=FONT, text_color="gray")
+    label_rated = ctk.CTkLabel(master=right_frame_page2, text=f"Ocenione testy:  {graded_tests}",font=FONT, text_color="#42A5F5")
     label_rated.pack(anchor='w', padx=10, pady=5)
 
     label_passed = ctk.CTkLabel(master=right_frame_page2, text=f"Zaliczone:  {passed_test}",font=FONT, text_color="green")
@@ -684,8 +698,8 @@ def test_results():
     label_avg_num_pt.pack(anchor='w',padx=10, pady=5)
 
 def raport_button_clicked():
-
     generate_report(graded_tests, passed_test, failed_tests,round(summary_score / graded_tests, 2),round(summary_points / graded_tests, 2))
+
 
 
 
@@ -694,7 +708,7 @@ def raport_button_clicked():
 ''' ----------------------------------------  WYGLĄD -------------------------------------------- '''
 
 
-button_tests_approve = ctk.CTkButton(master=page1, height=40, fg_color="#D9D9D9", text_color="black", text="Zatwierdź", font=font, corner_radius=2, hover_color="gray",   command=approve_color_tests ) # Wywołanie funkcji po przetworzeniu testów
+button_tests_approve = ctk.CTkButton(master=page1, height=40, fg_color="#D9D9D9", text_color="black", text="Zatwierdź", font=font, corner_radius=2, hover_color="gray", command=approve_color_tests ) # Wywołanie funkcji po przetworzeniu testów
 button_tests_approve.place_forget()
 button_tests_add = ctk.CTkButton(master=page1, height=40, fg_color="#D9D9D9", text_color="black", text="Dodaj", font=font, corner_radius=2, hover_color="gray", command=load_tests)
 button_tests_add.place_forget()
@@ -715,8 +729,7 @@ button_load_tests.pack(side="left")
 button_evaluate = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Oceń", font=font, corner_radius=1, hover_color="gray",command=evaluate)
 button_evaluate.pack(side="left")
 
-button_create_report = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Stwórz raport", font=font, corner_radius=1, hover_color="gray",command=raport_button_clicked)
-button_create_report.pack(side="left")
+button_create_report = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9BCFF8", text_color=TEXT_COLOR, text="Stwórz raport", font=font, corner_radius=1, hover_color="gray",command=raport_button_clicked)
 arrow_image_right = ctk.CTkImage(light_image=Image.open("Images/right-arrow.png"),
                                  size=(30, 30))
 
@@ -749,14 +762,14 @@ test_settings_frame.place_forget()
 question_number_label = ctk.CTkLabel(master=test_settings_frame, text="Liczba pytań:")
 question_number_label.grid(row=0, column=0,columnspan=2,padx=10,pady=10)
 
-points_entry = ctk.CTkEntry(master=test_settings_frame,width=50)
+points_entry = ctk.CTkEntry(master=test_settings_frame,width=80)
 points_entry.grid(row=1,column=2,columnspan=2)
 
 
 max_score_label = ctk.CTkLabel(master=test_settings_frame, text="Liczba punktów: ")
 max_score_label.grid(row=1, column=0,columnspan=2,padx=10,pady=10)
 
-questions_entry = ctk.CTkEntry(master=test_settings_frame,width=50)
+questions_entry = ctk.CTkEntry(master=test_settings_frame,width=80)
 questions_entry.grid(row=0, column=2,columnspan=2)
 
 
@@ -788,10 +801,12 @@ pass_entry = ctk.CTkEntry(master=test_settings_frame,width=50)
 pass_entry.grid(row=4,column=3,padx=10)
 
 
-button_test_settings_save = ctk.CTkButton(master=test_settings_frame, height=30, width=100 ,text="Zapisz", command=save_value,fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+button_test_settings_save = ctk.CTkButton(master=test_settings_frame, height=30, width=100 ,text="Zapisz",
+                                          command=save_value,fg_color="#e0dcdc", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
 button_test_settings_save.grid(row=5, column=2,columnspan=2, padx=10, pady=(20,10))
 
-button_test_settings_cancel = ctk.CTkButton(master=test_settings_frame, height=30, width=100, text="Anuluj", command=toggle_test_settings,fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+button_test_settings_cancel = ctk.CTkButton(master=test_settings_frame, height=30, width=100, text="Anuluj",
+                                            command=toggle_test_settings,fg_color="#e0dcdc", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
 button_test_settings_cancel.grid(row=5, column=0,columnspan=2, padx=10,pady=(20,10))
 
 
@@ -830,7 +845,5 @@ help_frame.lift(page1)
 settings_frame.lift(page1)
 help_frame.lift(page2)
 settings_frame.lift(page2)
-
-
 
 root.mainloop()
