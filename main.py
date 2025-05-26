@@ -12,7 +12,6 @@ from fpdf import FPDF
 import cv2
 import numpy as np
 
-
 root = ctk.CTk()
 
 
@@ -93,7 +92,7 @@ def change_template():
 
 root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
 root.resizable(False, False)
-root.title("Moja Aplikacja")
+root.title("Automatic Test Reviewer")
 
 font = ctk.CTkFont(family=FONT[0], size=FONT[1], weight=FONT[2])
 
@@ -243,7 +242,7 @@ def set_question_points(question_numbers,score_points):
     remaining_points_label = ctk.CTkLabel(master=set_question_points_frame,
                                           text=f"Punkty do wydania: {score_points}",font=font)
     remaining_points_label.grid(row=question_numbers, column=save_column,columnspan=columnspan, pady=(10,0))
-    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anulj",height=40,command=lambda:[toggle_test_settings(),toggle_set_question_points_frame()],fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(),toggle_set_question_points_frame()],fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_cancel.grid(row=question_numbers+1,column=cancel_column,columnspan=columnspan,pady=20,padx=10)
 
     button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda:[save_points(),toggle_set_question_points_frame()],fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
@@ -814,9 +813,6 @@ y = button_options.winfo_rooty() + button_options.winfo_height()
 
 button_help = ctk.CTkButton(master=options_frame, height=40, text="Pomoc", command=toggle_help_text, fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
 button_help.pack(fill="x")
-
-button_settings = ctk.CTkButton(master=options_frame, height=40, text="Ustawienia", command=toggle_settings_option, fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
-button_settings.pack(fill="x")
 
 button_exit = ctk.CTkButton(master=options_frame, height=40, text="Wyjdź", command=exit_program, fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
 button_exit.pack(fill="x")
