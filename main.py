@@ -285,9 +285,9 @@ def update_test_list():
     for i, test in enumerate(loaded_tests):
 
         item_frame = ctk.CTkFrame(master=list_frame, border_width=1, border_color="gray", fg_color="transparent")
-        item_frame.pack(fill=tk.X, expand=True, padx=10, pady=5)
+        item_frame.pack(fill=tk.X, expand=True, padx=20, pady=10)
 
-        label = ctk.CTkLabel(master=item_frame, text=test["file_name"])
+        label = ctk.CTkLabel(master=item_frame, text=test["file_name"],text_color="#E0E0E0")
         label.pack(side=tk.LEFT, fill=tk.X,padx=(10, 310), pady=5)
 
         delete_button = ctk.CTkButton(master=item_frame, text="X", width=30,
@@ -482,9 +482,12 @@ def test_results():
         label_2_status = tk.Label(master=item_frame_2, text=status, fg=color_status,
                                   bg=bg_color, font=("Arial", 12, "bold"))
         label_2_status.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=(0, 0), pady=5)
+        lupa_icon = ctk.CTkImage(light_image=Image.open("Images/loupe.png"),
+                         dark_image=Image.open("Images/loupe.png"), 
+                         size=(20, 20)) # 
 
-        diff_button = ctk.CTkButton(master=item_frame_2, width=120, height=button_height, fg_color="#4FC3F7",
-                                    text="Włącz podgląd", font=("Arial", 12, "bold"), corner_radius=4,
+        diff_button = ctk.CTkButton(master=item_frame_2, width=50, height=button_height, fg_color="#4FC3F7",image=lupa_icon,
+                                    text="", font=("Arial", 12, "bold"), corner_radius=4,
                                     text_color="black", command=lambda t=test: show_differences(t))
         diff_button.pack(side=tk.LEFT, fill=tk.X, padx=(35 if status == "Zaliczony" else 20, 0))
         diff_button.configure(hover_color="#35B1E0")

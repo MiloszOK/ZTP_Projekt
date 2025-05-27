@@ -1,2 +1,2 @@
-# PI
-praca inżynierska
+# ZTP
+Projekt ZTP 
