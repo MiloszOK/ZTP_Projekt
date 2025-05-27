@@ -10,6 +10,7 @@ from fpdf import FPDF
 import cv2
 import numpy as np
 from datetime import datetime
+from view import *
 
 
 root = ctk.CTk()
@@ -19,80 +20,6 @@ root = ctk.CTk()
 
 ''' ----------------------------------------  FUNKCJE PROGRAMU -------------------------------------------- '''
 
-
-def toggle_options_menu():
-    if options_frame.winfo_ismapped():
-        options_frame.place_forget()
-    else:
-        options_frame.place(x=x, y=y + 40, anchor=tk.NW)
-
-
-def toggle_help_text():
-    if help_frame.winfo_ismapped():
-        help_frame.grab_release()
-        help_frame.place_forget()
-    else:
-        help_frame.grab_set()
-        help_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-
-def toggle_settings_option():
-    if settings_frame.winfo_ismapped():
-        settings_frame.grab_release()
-        settings_frame.place_forget()
-    else:
-        settings_frame.grab_set()
-        settings_frame.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-
-def toggle_test_settings():
-    if test_settings_frame.winfo_ismapped():
-        test_settings_frame.grab_release()
-        test_settings_frame.place_forget()
-    else:
-        test_settings_frame.grab_set()
-        test_settings_frame.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
-
-
-
-def exit_program():
-    root.destroy()
-
-
-def show_page1():
-    page1.place(x=0, y=40, relwidth=1, relheight=1)
-    if not separator.winfo_ismapped():
-        separator.place(relx=0.5, rely=0.05, anchor=tk.N, relheight=0.85)
-    page2.place_forget()
-
-
-def show_page2():
-    page1.place_forget()
-    separator.place_forget()
-    page2.place(x=0, y=40, relwidth=1, relheight=1)
-
-
-def approve_color_template():
-    left_frame.configure(border_color="lightgreen")
-
-
-def change_template():
-    global template_loaded_image
-    file_path = filedialog.askopenfilename(
-        defaultextension=".png",
-        filetypes=[("Pliki PNG", "*.png"), ("Wszystkie pliki", "*.*")]
-    )
-    if not file_path:
-        return
-
-    try:
-        template_loaded_image = Image.open(file_path)
-        ctk_image = ctk.CTkImage(light_image=template_loaded_image, size=(420, 600))
-        template_image_label.configure(image=ctk_image)
-        template_image_label.image = ctk_image
-        print(f"{type(template_loaded_image.mode)}")
-        left_frame.configure(border_color="lightblue", border_width=2)
-    except Exception as e:
-        CTkMessagebox(title="Błąd", message=f"Nie można wczytać pliku: {e}", text_color="white")
 
 
 root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")
@@ -127,10 +54,10 @@ left_frame_page2.place(x=110, y=60, relwidth=0.6, relheight=0.75, anchor=tk.NW)
 right_frame_page2 = ctk.CTkFrame(master=page2, height=LEFT_FRAME_HEIGHT, fg_color="#484545",border_width=1,border_color="black")
 right_frame_page2.place(x=950, y=60, relwidth=0.20, relheight=0.35, anchor=tk.NW)
 
-button_template_approve = ctk.CTkButton(master=page1, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Zatwierdź", font=font, corner_radius=2, hover_color="gray", command=approve_color_template)
+button_template_approve = ctk.CTkButton(master=page1, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Zatwierdź", font=font, corner_radius=2, hover_color="gray", command=lambda: approve_color_template(left_frame))
 button_template_approve.place_forget()
 
-button_template_change = ctk.CTkButton(master=page1, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Zmień", font=font, corner_radius=2, hover_color="gray", command=change_template)
+button_template_change = ctk.CTkButton(master=page1, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Zmień", font=font, corner_radius=2, hover_color="gray", command=lambda: change_template(filedialog, template_image_label, left_frame))
 button_template_change.place_forget()
 
 template_image_label = ctk.CTkLabel(master=left_frame, text="")
@@ -158,14 +85,14 @@ def save_value():
             set_question_points(question_number,score_points)
         else:
             print(f"Zapisano wartości: liczba punktów = {score_points}, liczba pytań = {question_number}, próg zaliczeniowy: {pass_threshold},{grade_table[0]}, {grade_table[1]}, {grade_table[2]}")
-            toggle_test_settings()
+            toggle_test_settings(test_settings_frame)
     except ValueError:
         CTkMessagebox(title="Błąd",message = "Podaj poprawne wartości",icon="cancel", text_color="white", button_hover_color="grey")
 
 points_table = []
 def set_question_points(question_numbers,score_points):
     global points_table
-    toggle_test_settings()
+    toggle_test_settings(test_settings_frame)
     set_question_points_frame = ctk.CTkFrame(master=root,width=400,fg_color="#484545",corner_radius=4,
                                              border_color="#D9D9D9",border_width=1)
     set_question_points_frame.place(relx=0.5,rely=0.5,anchor=tk.CENTER)
@@ -242,7 +169,7 @@ def set_question_points(question_numbers,score_points):
     remaining_points_label = ctk.CTkLabel(master=set_question_points_frame,
                                           text=f"Punkty do wydania: {score_points}",font=font, text_color="white")
     remaining_points_label.grid(row=question_numbers, column=save_column,columnspan=columnspan, pady=(10,0))
-    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+    button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(test_settings_frame),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_cancel.grid(row=question_numbers+1,column=cancel_column,columnspan=columnspan,pady=20,padx=10)
 
     button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda:[save_points(),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
@@ -696,10 +623,10 @@ button_tests_add = ctk.CTkButton(master=page1, height=40, fg_color="#D9D9D9", te
 button_tests_add.place_forget()
 
 # Przyciski
-button_options = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Opcje", font=font, corner_radius=0, hover_color="gray", command=toggle_options_menu)
+button_options = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Opcje", font=font, corner_radius=0, hover_color="gray", command=lambda: toggle_options_menu(options_frame, x ,y))
 button_options.pack(side="left")
 
-button_create_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Ustawienia testu", font=font, corner_radius=1, hover_color="gray",command=toggle_test_settings)
+button_create_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color=FG_COLOR, text_color=TEXT_COLOR, text="Ustawienia testu", font=font, corner_radius=1, hover_color="gray",command=lambda: toggle_test_settings(test_settings_frame))
 button_create_template.pack(side="left")
 
 button_load_template = ctk.CTkButton(master=toolbar_frame, height=40, fg_color="#9a9a9a", text_color=TEXT_COLOR, text="Wczytaj szablon", font=font, corner_radius=1, hover_color="gray", command=load_template)
@@ -718,10 +645,10 @@ arrow_image_right = ctk.CTkImage(light_image=Image.open("Images/right-arrow.png"
 arrow_image_left = ctk.CTkImage(light_image=Image.open("Images/left-arrow.png"),
                                 size=(30, 30))
 
-button_right = ctk.CTkButton(master=toolbar_frame, height=40, width=100, image=arrow_image_right, text="", font=font, fg_color="transparent", command=show_page2, corner_radius=1, hover_color="gray")
+button_right = ctk.CTkButton(master=toolbar_frame, height=40, width=100, image=arrow_image_right, text="", font=font, fg_color="transparent", command=lambda: show_page2(page1, separator, page2), corner_radius=1, hover_color="gray")
 button_right.pack(side="right")
 
-button_left = ctk.CTkButton(master=toolbar_frame, height=40, width=100, image=arrow_image_left, text="", font=font, fg_color="transparent", command=show_page1, corner_radius=1, hover_color="gray")
+button_left = ctk.CTkButton(master=toolbar_frame, height=40, width=100, image=arrow_image_left, text="", font=font, fg_color="transparent", command=lambda: show_page1(page1, separator, page2), corner_radius=1, hover_color="gray")
 button_left.pack(side="right", padx=5)
 
 # opcje menu
@@ -730,10 +657,10 @@ x = button_options.winfo_rootx()
 y = button_options.winfo_rooty() + button_options.winfo_height()
 
 
-button_help = ctk.CTkButton(master=options_frame, height=40, text="Pomoc", command=toggle_help_text, fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
+button_help = ctk.CTkButton(master=options_frame, height=40, text="Pomoc", command=lambda: toggle_help_text(help_frame), fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
 button_help.pack(fill="x")
 
-button_exit = ctk.CTkButton(master=options_frame, height=40, text="Wyjdź", command=exit_program, fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
+button_exit = ctk.CTkButton(master=options_frame, height=40, text="Wyjdź", command=lambda: exit_program(root), fg_color=FG_COLOR, hover_color="gray", corner_radius=1, text_color=TEXT_COLOR, font=font)
 button_exit.pack(fill="x")
 
 # ustawienia testu
@@ -788,7 +715,7 @@ button_test_settings_save = ctk.CTkButton(master=test_settings_frame, height=30,
 button_test_settings_save.grid(row=5, column=2,columnspan=2, padx=10, pady=(20,10))
 
 button_test_settings_cancel = ctk.CTkButton(master=test_settings_frame, height=30, width=100, text="Anuluj",
-                                            command=toggle_test_settings,fg_color="#e0dcdc", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+                                            command=lambda: toggle_test_settings(test_settings_frame),fg_color="#e0dcdc", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
 button_test_settings_cancel.grid(row=5, column=0,columnspan=2, padx=10,pady=(20,10))
 
 
@@ -802,7 +729,7 @@ text_help_label.configure(justify=tk.LEFT)
 text_help_label.pack(pady=10, padx=10,side="top")
 
 
-ok_button = ctk.CTkButton(master=help_frame, height=30, text="OK", command=toggle_help_text, fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=3,width=90)
+ok_button = ctk.CTkButton(master=help_frame, height=30, text="OK", command=lambda: toggle_help_text(help_frame), fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=3,width=90)
 ok_button.pack(pady=10,side="bottom")
 
 # ustawienia menu
@@ -813,7 +740,7 @@ settings_frame.place_forget()
 text_settings_label = ctk.CTkLabel(master=settings_frame, text="Tutaj będa ustawienia", font=font, text_color=TEXT_COLOR)
 text_settings_label.pack(pady=10, padx=10)
 
-button_settings_cancel = ctk.CTkButton(master=settings_frame, height=30, text="Anuluj", command=toggle_settings_option, fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=0)
+button_settings_cancel = ctk.CTkButton(master=settings_frame, height=30, text="Anuluj", command=lambda: toggle_settings_option(settings_frame), fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=0)
 button_settings_cancel.pack(side="left", padx=5, pady=5)
 
 button_settings_approve = ctk.CTkButton(master=settings_frame, height=30, text="Zatwierdź", fg_color="gray", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=0)
