@@ -1,15 +1,9 @@
-from Assets.imports import *
+from Imports.imports import *
+from Imports.constants import *
 from buttons import *
 from raport import *
 
-
 root = ctk.CTk()
-
-
-
-
-''' ----------------------------------------  FUNKCJE PROGRAMU -------------------------------------------- '''
-
 
 
 root.geometry(f"{WINDOW_WIDTH}x{WINDOW_HEIGHT}")

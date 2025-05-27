@@ -5,7 +5,6 @@ from skimage.metrics import structural_similarity
 import customtkinter as ctk
 from CTkMessagebox import CTkMessagebox
 from PIL import Image
-from constants import *
 from fpdf import FPDF
 import cv2
 import numpy as np

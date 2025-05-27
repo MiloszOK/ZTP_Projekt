@@ -1,4 +1,4 @@
-from Assets.imports import *
+from Imports.imports import *
 
 def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_points,
                     loaded_tests, test_scores, score_points, pass_threshold, grade_table):
