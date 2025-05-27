@@ -1,15 +1,4 @@
-import tkinter as tk
-from tkinter import filedialog
-from skimage.feature import orb
-from skimage.metrics import structural_similarity
-import customtkinter as ctk
-from CTkMessagebox import CTkMessagebox
-from PIL import Image
-from constants import *
-from fpdf import FPDF
-import cv2
-import numpy as np
-from datetime import datetime
+from Assets.imports import *
 from buttons import *
 
 
@@ -36,11 +25,6 @@ page1.place(x=0, y=40, relwidth=1, relheight=1)
 page2 = ctk.CTkFrame(master=root, fg_color="transparent", height=680)
 page2.place_forget()
 
-
-app_height = 720
-toolbar_height = 40
-left_frame_height = app_height - toolbar_height - 80
-
 left_frame = ctk.CTkFrame(master=page1, height=LEFT_FRAME_HEIGHT, fg_color="transparent")
 left_frame.place(x=110, y=40, relwidth=0.325, relheight=0.75, anchor=tk.NW)
 
@@ -64,10 +48,6 @@ template_image_label = ctk.CTkLabel(master=left_frame, text="")
 template_image_label.pack(padx=10, pady=10, expand=True, anchor=tk.CENTER)
 
 
-score_points=0
-question_number=0
-pass_threshold=0
-grade_table = [0.0 for _ in range(3)]
 def save_value():
     global score_points,question_number,pass_threshold,grade_table
     try:
@@ -89,7 +69,7 @@ def save_value():
     except ValueError:
         CTkMessagebox(title="Błąd",message = "Podaj poprawne wartości",icon="cancel", text_color="white", button_hover_color="grey")
 
-points_table = []
+
 def set_question_points(question_numbers,score_points):
     global points_table
     toggle_test_settings(test_settings_frame)
@@ -192,7 +172,6 @@ def define_roi(image):
     return roi
 
 
-template_loaded_image = None
 def load_template():
     global template_loaded_image
     if template_loaded_image is not None:
@@ -256,8 +235,6 @@ def process_image(input_image):
 
     return warped_image
 
-
-loaded_tests = []
 
 def load_tests():
     global loaded_tests
@@ -350,7 +327,6 @@ def display_image(image, window_name="Obraz"):
     cv2.destroyAllWindows()
 
 
-test_scores=[]
 def evaluate():
     if left_frame.cget("border_color") == "lightgreen" and list_frame.cget("border_color") == "lightgreen":
 
@@ -471,7 +447,6 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
 
 
 list_frame_page_2 = ctk.CTkFrame(master=root)
-graded_tests,passed_test,failed_tests,summary_score,summary_points=0,0,0,0,0
 
 def test_results():
     screen_width = root.winfo_screenwidth()

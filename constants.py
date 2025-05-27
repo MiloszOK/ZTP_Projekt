@@ -7,3 +7,16 @@ TEXT_COLOR = "black"
 FONT = ("Helvetica", 12, "bold")
 FONT_SMALL = ("Helvetica",8,"bold")
 FONT_MEDIUM = ("Helvetica", 11, "bold")
+
+app_height = 720
+toolbar_height = 40
+left_frame_height = app_height - toolbar_height - 80
+score_points=0
+question_number=0
+pass_threshold=0
+grade_table = [0.0 for _ in range(3)]
+points_table = []
+template_loaded_image = None
+loaded_tests = []
+test_scores=[]
+graded_tests,passed_test,failed_tests,summary_score,summary_points=0,0,0,0,0
