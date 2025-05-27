@@ -10,7 +10,7 @@ from fpdf import FPDF
 import cv2
 import numpy as np
 from datetime import datetime
-from view import *
+from buttons import *
 
 
 root = ctk.CTk()
