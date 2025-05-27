@@ -3,7 +3,7 @@ from CTkMessagebox import CTkMessagebox
 import json
 import os
 
-PASSWORD_FILE = "passwords.json"
+PASSWORD_FILE = "Assets/passwords.json"
 
 def load_passwords():
     if not os.path.exists(PASSWORD_FILE):

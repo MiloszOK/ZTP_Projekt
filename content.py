@@ -11,6 +11,7 @@ import cv2
 import numpy as np
 from datetime import datetime
 
+
 root = ctk.CTk()
 
 
@@ -61,13 +62,13 @@ def show_page1():
     page1.place(x=0, y=40, relwidth=1, relheight=1)
     if not separator.winfo_ismapped():
         separator.place(relx=0.5, rely=0.05, anchor=tk.N, relheight=0.85)
-    page2.place_forget()  # Ukryj stronę 2
+    page2.place_forget()
 
 
 def show_page2():
-    page1.place_forget()  # Ukryj stronę 1
+    page1.place_forget()
     separator.place_forget()
-    page2.place(x=0, y=40, relwidth=1, relheight=1)  # Wyświetl stronę 2
+    page2.place(x=0, y=40, relwidth=1, relheight=1)
 
 
 def approve_color_template():
@@ -81,13 +82,13 @@ def change_template():
         filetypes=[("Pliki PNG", "*.png"), ("Wszystkie pliki", "*.*")]
     )
     if not file_path:
-        return  # Anulowano wybór pliku
+        return
 
     try:
         template_loaded_image = Image.open(file_path)
         ctk_image = ctk.CTkImage(light_image=template_loaded_image, size=(420, 600))
         template_image_label.configure(image=ctk_image)
-        template_image_label.image = ctk_image  # Zachowanie referencji do obrazu
+        template_image_label.image = ctk_image
         print(f"{type(template_loaded_image.mode)}")
         left_frame.configure(border_color="lightblue", border_width=2)
     except Exception as e:
@@ -115,7 +116,6 @@ left_frame_height = app_height - toolbar_height - 80
 
 left_frame = ctk.CTkFrame(master=page1, height=LEFT_FRAME_HEIGHT, fg_color="transparent")
 left_frame.place(x=110, y=40, relwidth=0.325, relheight=0.75, anchor=tk.NW)
-# left_frame.pack(side=tk.LEFT, padx=110)
 
 right_frame = ctk.CTkFrame(master=page1, height=LEFT_FRAME_HEIGHT, fg_color="transparent")
 right_frame.place(x=705, y=100, relwidth=0.4, relheight=0.60, anchor=tk.NW)
@@ -485,7 +485,7 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
     pdf = FPDF()
     pdf.add_page()
     pdf.set_fill_color(60,60,60)
-    pdf.add_font('DejaVu', '', "DejaVuSans.ttf")
+    pdf.add_font('DejaVu', '', "Assets/DejaVuSans.ttf")
 
     pdf.set_font('DejaVu', '', 16)
     pdf.cell(200, 10, text="RAPORT", ln=1, align="C")
@@ -538,7 +538,7 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
                  txt=f"Nazwa: {test['file_name']}  Liczba punktów: {acquired_points}  Ocena: {degree}  Status: {status}",
                  ln=1, align="L")
 
-    pdf.output("raport.pdf")
+    pdf.output("Assets/raport.pdf")
     CTkMessagebox(title="Sukces", message="Raport wygenerowany pomyślnie!", icon="check", text_color="white",
                 button_hover_color="grey")
 
