@@ -115,18 +115,29 @@ def set_question_points(question_numbers,score_points):
         point_entry.grid(row=row,column=column+1,pady=5, padx=10)
         point_entry_table.append(point_entry)
         point_entry.bind("<KeyRelease>", update_remaining_points)
+
     def save_points():
+        has_error = False
+        for entry in point_entry_table:
+            entry.configure(border_color="gray")  # reset koloru
+
         for i, point in enumerate(point_entry_table):
             try:
                 value = int(point.get())
                 if 0 <= i < question_number:
-                    points_table[i]= value
+                    points_table[i] = value
                 else:
                     print(f"Indeks {i} poza zakresem tabeli")
             except ValueError:
-                print(f"Nieprawidłowa wartość w polu {i+i}.")
+                has_error = True
+                point.configure(border_color="red")
 
-
+        if has_error:
+            CTkMessagebox(
+                title="Uwaga", message="Nie wpisałeś/aś wszystkich wartości!", icon="warning",
+                text_color="white", button_hover_color="grey", option_1="OK")
+            return False
+        return True
 
     if question_numbers % 10 == 0 and question_numbers > 10:
         num_columns = (question_numbers // 10) * 2
@@ -153,24 +164,8 @@ def set_question_points(question_numbers,score_points):
     button_question_points_cancel = ctk.CTkButton(master=set_question_points_frame, text="Anuluj",height=40,command=lambda:[toggle_test_settings(test_settings_frame),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_cancel.grid(row=question_numbers+1,column=cancel_column,columnspan=columnspan,pady=20,padx=10)
 
-    button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda:[save_points(),toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
+    button_question_points_save = ctk.CTkButton(master=set_question_points_frame, text= "Zapisz punkty",height=40, command=lambda: [save_points() and toggle_set_question_points_frame()],fg_color="#E1E1E1", hover_color="gray", font=font, text_color=TEXT_COLOR, corner_radius=2)
     button_question_points_save.grid(row=question_numbers+1, column=save_column,columnspan=columnspan, pady=20,padx=10)
-
-def define_roi(image):
-    """
-    Wyświetla obraz i pozwala użytkownikowi zaznaczyć prostokątny obszar ROI.
-    Zwraca współrzędne i wymiary wybranego ROI.
-    """
-
-    window_name = "Zaznacz obszar pytań"
-    cv2.namedWindow(window_name)
-    cv2.imshow(window_name, image)
-
-    roi = cv2.selectROI(window_name, image)
-
-    cv2.destroyAllWindows()
-
-    return roi
 
 
 def load_template():
