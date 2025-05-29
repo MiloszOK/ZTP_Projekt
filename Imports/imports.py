@@ -9,3 +9,6 @@ from fpdf import FPDF
 import cv2
 import numpy as np
 from datetime import datetime
+import inspect
+import os
+import sys
