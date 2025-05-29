@@ -16,7 +16,7 @@ except Exception as e:
     sys.exit(1)
 
 root = ctk.CTk()
-root.geometry("400x200")
+root.geometry("320x180")
 root.title("Logowanie")
 
 font = ctk.CTkFont(family="Arial", size=16)
@@ -25,10 +25,10 @@ label = ctk.CTkLabel(root, text="Wprowadź hasło", font=font)
 label.pack(pady=20)
 
 entry = ctk.CTkEntry(root, show="*", width=200, font=font)
-entry.pack(pady=10)
+entry.pack(pady=0)
 
 status_label = ctk.CTkLabel(root, text="", text_color="red")
-status_label.pack(pady=5)
+status_label.pack(pady=0)
 
 def check_password():
     password = entry.get()
@@ -39,6 +39,6 @@ def check_password():
         status_label.configure(text="Nieprawidłowe hasło")
 
 login_button = ctk.CTkButton(root, text="Zaloguj", command=check_password, font=font)
-login_button.pack(pady=10)
+login_button.pack(pady=(0, 0))
 
 root.mainloop()
