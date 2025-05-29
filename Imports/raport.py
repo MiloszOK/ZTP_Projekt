@@ -5,7 +5,7 @@ def generate_report(graded_tests, passed_tests, failed_tests, avg_score, avg_poi
     pdf = FPDF()
     pdf.add_page()
     pdf.set_fill_color(60,60,60)
-    pdf.add_font('DejaVu', '', "Assets/DejaVuSans.ttf")
+    pdf.add_font('DejaVu', '', "../Assets/DejaVuSans.ttf")
 
     pdf.set_font('DejaVu', '', 16)
     pdf.cell(200, 10, text="RAPORT", ln=1, align="C")

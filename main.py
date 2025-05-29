@@ -34,7 +34,7 @@ def check_password():
     password = entry.get()
     if password in valid_passwords:
         root.destroy()
-        import logic
+        import Imports.logic
     else:
         status_label.configure(text="Nieprawidłowe hasło")
 
