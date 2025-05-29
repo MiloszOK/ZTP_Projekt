@@ -1,7 +1,7 @@
 from Imports.imports import *
 from Imports.constants import *
-from buttons import *
-from raport import *
+from Imports.buttons import *
+from Imports.raport import *
 
 root = ctk.CTk()
 
